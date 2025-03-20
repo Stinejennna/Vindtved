@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.windmillproject.AppController">
+    <children>
+        <LineChart fx:id="windSpeedHistoryChart" prefHeight="400.0" prefWidth="800.0" title="Wind Speed History">
+            <xAxis>
+                <NumberAxis fx:id="windSpeedHistoryXAxis" label="Timestamp" side="BOTTOM" />
+            </xAxis>
+            <yAxis>
+                <NumberAxis label="Speed (m/s)" side="LEFT" />
+            </yAxis>
+        </LineChart>
+    </children>
+</VBox>
