@@ -1,18 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<VBox xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.windmillproject.AppController">
-    <children>
-        <LineChart fx:id="windSpeedHistoryChart" prefHeight="400.0" prefWidth="800.0" title="Wind Speed History">
-            <xAxis>
-                <NumberAxis fx:id="windSpeedHistoryXAxis" label="Timestamp" side="BOTTOM" />
-            </xAxis>
-            <yAxis>
-                <NumberAxis label="Speed (m/s)" side="LEFT" />
-            </yAxis>
-        </LineChart>
-    </children>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.windmillproject.AppController"
+      prefHeight="800.0" prefWidth="800.0">
+
+    <AnchorPane prefHeight="50.0" prefWidth="800.0">
+        <Label alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" text="Vindtved Møllerne">
+            <font>
+                <Font size="24.0"/>
+            </font>
+            <VBox.margin>
+                <Insets bottom="10.0"/>
+            </VBox.margin>
+        </Label>
+    </AnchorPane>
+
+    <TabPane prefHeight="750.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
+        <Tab text="Vind hastighed Historik">
+            <LineChart fx:id="windSpeedHistoryChart" prefHeight="720.0" prefWidth="800.0">
+                <xAxis>
+                    <NumberAxis fx:id="windSpeedHistoryXAxis"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis label="Vind hastighed (m/s)"/>
+                </yAxis>
+            </LineChart>
+        </Tab>
+        <Tab text="Dagligt Total">
+            <BarChart fx:id="dailyTotalChart" prefHeight="720.0" prefWidth="800.0">
+                <xAxis>
+                    <CategoryAxis fx:id="dailyTotalXAxis"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis label="Dagligt total"/>
+                </yAxis>
+            </BarChart>
+        </Tab>
+    </TabPane>
+
 </VBox>

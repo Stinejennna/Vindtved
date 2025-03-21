@@ -3,6 +3,8 @@ package org.example.windmillproject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -27,8 +29,13 @@ public class AppController implements Initializable {
     private LineChart<Number, Number> windSpeedHistoryChart;
     @FXML
     private NumberAxis windSpeedHistoryXAxis;
+    @FXML
+    private BarChart<String, Number> dailyTotalChart;
+    @FXML
+    private CategoryAxis dailyTotalXAxis;
 
     private XYChart.Series<Number, Number> windSpeedHistorySeries;
+    private XYChart.Series<String, Number> dailyTotalSeries;
 
     private final DatabaseHandler databaseHandler = new DatabaseHandler();
     private final ExecutorService databaseExecutor = Executors.newSingleThreadExecutor();
@@ -52,19 +59,26 @@ public class AppController implements Initializable {
             }
         });
 
-        // Set explicit axis range for 24 hours
-        windSpeedHistoryXAxis.setAutoRanging(false);
+        setupAxis(windSpeedHistoryXAxis);
+    }
+
+    private void setupAxis(NumberAxis axis){
+        axis.setAutoRanging(false);
         long now = System.currentTimeMillis();
-        long oneDayAgo = now - (24 * 60 * 60 * 1000); // 24 hours ago
-        windSpeedHistoryXAxis.setLowerBound(oneDayAgo);
-        windSpeedHistoryXAxis.setUpperBound(now);
-        windSpeedHistoryXAxis.setTickUnit(60 * 60 * 1000); // 2 hours tick unit
+        long oneDayAgo = now - (24 * 60 * 60 * 1000);
+        axis.setLowerBound(oneDayAgo);
+        axis.setUpperBound(now);
+        axis.setTickUnit(60 * 60 * 1000);
     }
 
     private void setupCharts() {
         windSpeedHistorySeries = new XYChart.Series<>();
         windSpeedHistorySeries.setName("Wind Speed History (m/s)");
         windSpeedHistoryChart.getData().add(windSpeedHistorySeries);
+
+        dailyTotalSeries = new XYChart.Series<>();
+        dailyTotalSeries.setName("Daily Total");
+        dailyTotalChart.getData().add(dailyTotalSeries);
     }
 
     private void startDataFetchTimer() {
@@ -74,19 +88,18 @@ public class AppController implements Initializable {
             public void run() {
                 fetchAndDisplayData();
             }
-        }, 0, 10 * 60 * 1000); // 10 minutes
+        }, 0, 10 * 60 * 1000);
     }
 
     private void fetchAndDisplayData() {
         try {
-            Main.fetchData(this::updateUI, this::storeData, this::updateWindSpeedHistoryChart);
+            Main.fetchData(this::updateUI, this::storeData, this::updateWindSpeedHistoryChart, this::updateDailyTotalChart);
         } catch (URISyntaxException | InterruptedException | java.io.IOException e) {
             e.printStackTrace();
         }
     }
 
     private void updateUI(LatestReading latestReading) {
-        // No longer used, but kept for Main.fetchData signature
     }
 
     private void storeData(LatestReading latestReading) {
@@ -104,13 +117,23 @@ public class AppController implements Initializable {
             windSpeedHistorySeries.getData().clear();
             if (latestReadings != null) {
                 for (LatestReading reading : latestReadings) {
-                    reading.parseLoggedAt(); // Parse the timestamp
+                    reading.parseLoggedAt();
                     if (reading.loggedAt != null) {
                         long timeMillis = reading.loggedAt.getTime();
                         double windSpeed = reading.windSpeed;
-
                         windSpeedHistorySeries.getData().add(new XYChart.Data<>(timeMillis, windSpeed));
                     }
+                }
+            }
+        });
+    }
+
+    private void updateDailyTotalChart(List<LastMonthData> lastMonthData) {
+        Platform.runLater(() -> {
+            dailyTotalSeries.getData().clear();
+            if (lastMonthData != null) {
+                for (LastMonthData data : lastMonthData) {
+                    dailyTotalSeries.getData().add(new XYChart.Data<>(data.date, data.dailyTotal));
                 }
             }
         });
