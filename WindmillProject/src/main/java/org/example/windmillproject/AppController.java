@@ -103,6 +103,7 @@ public class AppController implements Initializable {
     }
 
     private void storeData(LatestReading latestReading) {
+        System.out.println("Attempting to store: " + latestReading);
         databaseExecutor.submit(() -> {
             try {
                 databaseHandler.insertReading(latestReading);

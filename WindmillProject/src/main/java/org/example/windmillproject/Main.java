@@ -57,6 +57,9 @@ public class Main {
 
             uiUpdate.accept(latestReading);
             databaseStore.accept(latestReading);
+            for (LatestReading reading : latestReadings) {
+                databaseStore.accept(reading);
+            }
             historyUpdate.accept(latestReadings);
         } catch (JsonParseException e) {
             System.err.println("Error parsing JSON: " + e.getMessage());
